@@ -4,18 +4,19 @@ const rollButton = document.getElementById("roll-button");
 rollButton.addEventListener("click", rollDice);
 
 function rollDice() {
+    // Disable button while dice is rolling
     rollButton.disabled = true;
 
-    // Reset the animation
+    // Reset animation
     dice.classList.remove("rolling");
 
-    // Force the browser to recognize the reset
+    // Force browser to recognize the animation reset
     void dice.offsetWidth;
 
-    // Start the animation
+    // Start animation
     dice.classList.add("rolling");
 
-    // Change the image while the dice is rolling
+    // Change dice image while rolling
     const rollInterval = setInterval(() => {
         const randomNumber = Math.floor(Math.random() * 6) + 1;
 
@@ -27,14 +28,16 @@ function rollDice() {
     setTimeout(() => {
         clearInterval(rollInterval);
 
-        // Generate the final result
+        // Generate final result
         const result = Math.floor(Math.random() * 6) + 1;
 
         dice.src = `assets/dice/dice-${result}.png`;
         dice.alt = `Dice showing ${result}`;
 
+        // Stop animation
         dice.classList.remove("rolling");
 
+        // Re-enable button
         rollButton.disabled = false;
     }, 800);
 }

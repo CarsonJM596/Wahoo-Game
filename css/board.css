@@ -1,0 +1,141 @@
+:root {
+    --board-wood: #7a4621;
+    --board-border: #4d2b13;
+    --yellow-marble: #f1c40f;
+    --red-marble: #e74c3c;
+    --blue-marble: #3498db;
+    --green-marble: #2ecc71;
+    --white-hole: #f0ebe1;
+}
+
+.board-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Outer Round Wooden Board */
+.board {
+    width: 620px;
+    height: 620px;
+    background-color: var(--board-wood);
+    border: 16px solid var(--board-border);
+    border-radius: 50%;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6), 0 12px 30px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    box-sizing: border-box;
+
+    /* Fixed 15x15 Coordinate System */
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+}
+
+/* Universal Hole Styling */
+.hole {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    justify-self: center;
+    align-self: center;
+}
+
+/* White Outer Track */
+.track-hole {
+    background-color: var(--white-hole);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.55);
+    border: 1.5px solid #d4ceb8;
+}
+
+/* Colored Player Start Base Holes */
+.green  { background-color: var(--green-marble); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.7); }
+.yellow { background-color: var(--yellow-marble); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.7); }
+.red    { background-color: var(--red-marble); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.7); }
+.blue   { background-color: var(--blue-marble); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.7); }
+
+
+/* --- 1. CORNER PLAYER BASES (Safe Inside Circle Edge) --- */
+.gb1 { grid-column: 3; grid-row: 3; }
+.gb2 { grid-column: 4; grid-row: 3; }
+.gb3 { grid-column: 3; grid-row: 4; }
+.gb4 { grid-column: 4; grid-row: 4; }
+
+.yb1 { grid-column: 12; grid-row: 3; }
+.yb2 { grid-column: 13; grid-row: 3; }
+.yb3 { grid-column: 12; grid-row: 4; }
+.yb4 { grid-column: 13; grid-row: 4; }
+
+.rb1 { grid-column: 12; grid-row: 12; }
+.rb2 { grid-column: 13; grid-row: 12; }
+.rb3 { grid-column: 12; grid-row: 13; }
+.rb4 { grid-column: 13; grid-row: 13; }
+
+.bb1 { grid-column: 3; grid-row: 12; }
+.bb2 { grid-column: 4; grid-row: 12; }
+.bb3 { grid-column: 3; grid-row: 13; }
+.bb4 { grid-column: 4; grid-row: 13; }
+
+
+/* --- 2. 5x5 PLUS SIGN TRACK GRID MAPPING --- */
+
+/* Top Arm Top Edge (5 holes: Cols 6-10, Row 1) */
+.t1  { grid-column: 6;  grid-row: 1; }
+.t2  { grid-column: 7;  grid-row: 1; }
+.t3  { grid-column: 8;  grid-row: 1; }
+.t4  { grid-column: 9;  grid-row: 1; }
+.t5  { grid-column: 10; grid-row: 1; }
+
+/* Top Arm Right Edge down to Center Inner Corner */
+.t6  { grid-column: 10; grid-row: 2; }
+.t7  { grid-column: 10; grid-row: 3; }
+.t8  { grid-column: 10; grid-row: 4; }
+.t9  { grid-column: 10; grid-row: 5; }
+
+/* Right Arm Top Edge (Cols 11-15, Row 6) */
+.t10 { grid-column: 11; grid-row: 6; }
+.t11 { grid-column: 12; grid-row: 6; }
+.t12 { grid-column: 13; grid-row: 6; }
+.t13 { grid-column: 14; grid-row: 6; }
+.t14 { grid-column: 15; grid-row: 6; }
+
+/* Right Arm Outer Edge (Cols 15, Rows 7-10) */
+.t15 { grid-column: 15; grid-row: 7; }
+.t16 { grid-column: 15; grid-row: 8; }
+.t17 { grid-column: 15; grid-row: 9; }
+.t18 { grid-column: 15; grid-row: 10; }
+
+/* Bottom Arm Bottom Edge (5 holes: Cols 10-6, Row 15) */
+.t19 { grid-column: 10; grid-row: 15; }
+.t20 { grid-column: 9;  grid-row: 15; }
+.t21 { grid-column: 8;  grid-row: 15; }
+.t22 { grid-column: 7;  grid-row: 15; }
+.t23 { grid-column: 6;  grid-row: 15; }
+
+/* Bottom Arm Left Edge up to Inner Corner */
+.t24 { grid-column: 6;  grid-row: 14; }
+.t25 { grid-column: 6;  grid-row: 13; }
+.t26 { grid-column: 6;  grid-row: 12; }
+.t27 { grid-column: 6;  grid-row: 11; }
+
+/* Left Arm Bottom Edge (Cols 5-1, Row 10) */
+.t28 { grid-column: 5;  grid-row: 10; }
+.t29 { grid-column: 4;  grid-row: 10; }
+.t30 { grid-column: 3;  grid-row: 10; }
+.t31 { grid-column: 2;  grid-row: 10; }
+.t32 { grid-column: 1;  grid-row: 10; }
+
+/* Left Arm Outer Edge (Col 1, Rows 9-6) */
+.t33 { grid-column: 1;  grid-row: 9; }
+.t34 { grid-column: 1;  grid-row: 8; }
+.t35 { grid-column: 1;  grid-row: 7; }
+.t36 { grid-column: 1;  grid-row: 6; }
+
+/* Left Arm Top Edge to Top-Left Inner Corner */
+.t37 { grid-column: 2;  grid-row: 6; }
+.t38 { grid-column: 3;  grid-row: 6; }
+.t39 { grid-column: 4;  grid-row: 6; }
+.t40 { grid-column: 5;  grid-row: 6; }
+.t41 { grid-column: 6;  grid-row: 5; }
+.t42 { grid-column: 6;  grid-row: 4; }
+.t43 { grid-column: 6;  grid-row: 3; }
+.t44 { grid-column: 6;  grid-row: 2; }

@@ -3,23 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Wahoo</title>
-
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/dice.css">
 </head>
-
 <body>
 
     <main class="game-container">
-
         <h1>Wahoo</h1>
 
-        <div class="dice-container">
-            <img id="dice" class="dice" src="assets/dice/dice-1.png" alt="Dice showing 1">
-        </div>
+        <div class="game-layout">
+            <!-- BOARD SECTION -->
+            <section class="board-container">
+                <div class="board">
 
-        <button id="roll-button">Roll Dice</button>
+                    <!-- CORNER BASES -->
+                    <!-- Green (Top-Left) -->
+                    <div class="hole base-hole green gb1"></div>
+                    <div class="hole base-hole green gb2"></div>
+                    <div class="hole base-hole green gb3"></div>
+                    <div class="hole base-hole green gb4"></div>
+
+                    <!-- Yellow (Top-Right) -->
+                    <div class="hole base-hole yellow yb1"></div>
+                    <div class="hole base-hole yellow yb2"></div>
+                    <div class="hole base-hole yellow yb3"></div>
+                    <div class="hole base-hole yellow yb4"></div>
+
+                    <!-- Red (Bottom-Right) -->
+                    <div class="hole base-hole red rb1"></div>
+                    <div class="hole base-hole red rb2"></div>
+                    <div class="hole base-hole red rb3"></div>
+                    <div class="hole base-hole red rb4"></div>
+
+                    <!-- Blue (Bottom-Left) -->
+                    <div class="hole base-hole blue bb1"></div>
+                    <div class="hole base-hole blue bb2"></div>
+                    <div class="hole base-hole blue bb3"></div>
+                    <div class="hole base-hole blue bb4"></div>
+
+
+                    <!-- ============================================= -->
+                    <!-- 5x5 PLUS SIGN OUTLINE TRACK (44 Numbered Holes) -->
+                    <!-- ============================================= -->
+
+                    <!-- TOP ARM (5 holes top edge) -->
+                    <div class="hole track-hole t1" data-hole="1"></div>
+                    <div class="hole track-hole t2" data-hole="2"></div>
+                    <div class="hole track-hole t3" data-hole="3"></div>
+                    <div class="hole track-hole t4" data-hole="4"></div>
+                    <div class="hole track-hole t5" data-hole="5"></div>
+
+                    <!-- TOP-RIGHT ARM OUTLINE -->
+                    <div class="hole track-hole t6" data-hole="6"></div>
+                    <div class="hole track-hole t7" data-hole="7"></div>
+                    <div class="hole track-hole t8" data-hole="8"></div>
+                    <div class="hole track-hole t9" data-hole="9"></div>
+
+                    <!-- RIGHT ARM (5 holes right edge) -->
+                    <div class="hole track-hole t10" data-hole="10"></div>
+                    <div class="hole track-hole t11" data-hole="11"></div>
+                    <div class="hole track-hole t12" data-hole="12"></div>
+                    <div class="hole track-hole t13" data-hole="13"></div>
+                    <div class="hole track-hole t14" data-hole="14"></div>
+
+                    <!-- BOTTOM-RIGHT ARM OUTLINE -->
+                    <div class="hole track-hole t15" data-hole="15"></div>
+                    <div class="hole track-hole t16" data-hole="16"></div>
+                    <div class="hole track-hole t17" data-hole="17"></div>
+                    <div class="hole track-hole t18" data-hole="18"></div>
+
+                    <!-- BOTTOM ARM (5 holes bottom edge) -->
+                    <div class="hole track-hole t19" data-hole="19"></div>
+                    <div class="hole track-hole t20" data-hole="20"></div>
+                    <div class="hole track-hole t21" data-hole="21"></div>
+                    <div class="hole track-hole t22" data-hole="22"></div>
+                    <div class="hole track-hole t23" data-hole="23"></div>
+
+                    <!-- BOTTOM-LEFT ARM OUTLINE -->
+                    <div class="hole track-hole t24" data-hole="24"></div>
+                    <div class="hole track-hole t25" data-hole="25"></div>
+                    <div class="hole track-hole t26" data-hole="26"></div>
+                    <div class="hole track-hole t27" data-hole="27"></div>
+
+                    <!-- LEFT ARM (5 holes left edge) -->
+                    <div class="hole track-hole t28" data-hole="28"></div>
+                    <div class="hole track-hole t29" data-hole="29"></div>
+                    <div class="hole track-hole t30" data-hole="30"></div>
+                    <div class="hole track-hole t31" data-hole="31"></div>
+                    <div class="hole track-hole t32" data-hole="32"></div>
+
+                    <!-- TOP-LEFT ARM OUTLINE -->
+                    <div class="hole track-hole t33" data-hole="33"></div>
+                    <div class="hole track-hole t34" data-hole="34"></div>
+                    <div class="hole track-hole t35" data-hole="35"></div>
+                    <div class="hole track-hole t36" data-hole="36"></div>
+                    <div class="hole track-hole t37" data-hole="37"></div>
+                    <div class="hole track-hole t38" data-hole="38"></div>
+                    <div class="hole track-hole t39" data-hole="39"></div>
+                    <div class="hole track-hole t40" data-hole="40"></div>
+                    <div class="hole track-hole t41" data-hole="41"></div>
+                    <div class="hole track-hole t42" data-hole="42"></div>
+                    <div class="hole track-hole t43" data-hole="43"></div>
+                    <div class="hole track-hole t44" data-hole="44"></div>
+
+                </div>
+            </section>
+
+            <!-- SIDE PANEL -->
+            <aside class="game-controls">
+                <h2>Current Turn</h2>
+                <p id="current-player">Player 1</p>
+                <img id="dice" class="dice" src="assets/dice/dice-1.png" alt="Dice showing 1">
+                <button id="roll-button">Roll Dice</button>
+            </aside>
+        </div>
 
     </main>
 
