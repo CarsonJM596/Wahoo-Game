@@ -60,7 +60,7 @@
 .gb3 { grid-column: 3; grid-row: 4; }
 .gb4 { grid-column: 4; grid-row: 4; }
 
-yb1 { grid-column: 12; grid-row: 3; }
+.yb1 { grid-column: 12; grid-row: 3; }
 .yb2 { grid-column: 13; grid-row: 3; }
 .yb3 { grid-column: 12; grid-row: 4; }
 .yb4 { grid-column: 13; grid-row: 4; }
