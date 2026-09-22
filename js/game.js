@@ -263,19 +263,10 @@ function getLegalDestination(marble, roll) {
     const player = currentPlayer();
     const position = marble.dataset.position;
 
-    // Starting area: a marble may enter the board on a 1 or 6,
-    // or go directly to the center on a 5.
+    // A marble must leave its starting base first.
+    // Only a marble sitting on its own starting corner may enter
+    // the center on a subsequent roll of 5.
     if (position === "-1") {
-        if (roll === 5) {
-            const centerOccupant = getCenterMarble();
-
-            if (centerOccupant && isFriendlyMarble(centerOccupant, player)) {
-                return null;
-            }
-
-            return { type: "center" };
-        }
-
         if (roll !== 1 && roll !== 6) {
             return null;
         }
@@ -290,6 +281,18 @@ function getLegalDestination(marble, roll) {
             type: "track",
             position: player.entry
         };
+    }
+
+    // A marble that has already entered the board from its starting
+    // corner may enter the center on a 5.
+    if (position === String(player.entry) && roll === 5) {
+        const centerOccupant = getCenterMarble();
+
+        if (centerOccupant && isFriendlyMarble(centerOccupant, player)) {
+            return null;
+        }
+
+        return { type: "center" };
     }
 
     // Center marbles can only leave on a 1, and they leave through
