@@ -153,3 +153,19 @@
 .t50 { grid-column: 6;  grid-row: 4; }
 .t51 { grid-column: 6;  grid-row: 3; }
 .t52 { grid-column: 6;  grid-row: 2; }
+/* --- PLAYABLE MARBLES --- */
+.marble {
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.marble:hover {
+    transform: scale(1.12);
+}
+
+.marble.selected {
+    transform: scale(1.18);
+    box-shadow: 0 0 0 3px white, 0 0 12px rgba(255,255,255,0.9);
+}
