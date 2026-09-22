@@ -232,3 +232,17 @@
     box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.55);
     border: 1.5px solid #d4ceb8;
 }
+
+
+/* Legal move indicator */
+.marble.legal-move {
+    outline: 3px solid white;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.25), 0 0 16px rgba(255, 255, 255, 0.95);
+    animation: legalMovePulse 1s ease-in-out infinite;
+}
+
+@keyframes legalMovePulse {
+    0%, 100% { transform: scale(1.08); }
+    50% { transform: scale(1.18); }
+}
