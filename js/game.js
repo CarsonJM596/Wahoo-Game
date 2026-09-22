@@ -454,7 +454,10 @@ rollButton.addEventListener("click", async () => {
             // Extra roll is already handled by keeping the same player.
             rollButton.disabled = false;
         } else {
-            setTimeout(nextPlayer, 500);
+            // Give the player enough time to see that their turn had no legal moves
+            // before advancing to the next player.
+            setMessage(`Rolled ${result}. No legal moves — next player's turn in 3 seconds.`);
+            setTimeout(nextPlayer, 3000);
         }
     }
 });
