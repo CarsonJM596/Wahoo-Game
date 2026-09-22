@@ -246,3 +246,35 @@
     0%, 100% { transform: scale(1.08); }
     50% { transform: scale(1.18); }
 }
+
+
+/* Legal move choices shown when a roll has multiple destinations. */
+.move-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.move-choice {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d4ceb8;
+    border-radius: 8px;
+    background: #f0ebe1;
+    color: #2b1a0d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.move-choice:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.move-choice:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 2px;
+}
