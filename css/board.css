@@ -190,3 +190,45 @@
 #blue-2   { grid-column: 4;  grid-row: 12; }
 #blue-3   { grid-column: 3;  grid-row: 13; }
 #blue-4   { grid-column: 4;  grid-row: 13; }
+
+
+/* --- 3. PLAYER HOME PATHS --- */
+/* Four holes running inward along the center of each arm. */
+.home-hole {
+    background-color: var(--white-hole);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.55);
+    border: 1.5px solid #d4ceb8;
+}
+
+/* Top: rows 2-5, centered in the top arm */
+.h1 { grid-column: 8; grid-row: 2; }
+.h2 { grid-column: 8; grid-row: 3; }
+.h3 { grid-column: 8; grid-row: 4; }
+.h4 { grid-column: 8; grid-row: 5; }
+
+/* Right: columns 11-14, centered in the right arm */
+.h5 { grid-column: 11; grid-row: 8; }
+.h6 { grid-column: 12; grid-row: 8; }
+.h7 { grid-column: 13; grid-row: 8; }
+.h8 { grid-column: 14; grid-row: 8; }
+
+/* Bottom: rows 11-14, centered in the bottom arm */
+.h9  { grid-column: 8; grid-row: 11; }
+.h10 { grid-column: 8; grid-row: 12; }
+.h11 { grid-column: 8; grid-row: 13; }
+.h12 { grid-column: 8; grid-row: 14; }
+
+/* Left: columns 2-5, centered in the left arm */
+.h13 { grid-column: 2; grid-row: 8; }
+.h14 { grid-column: 3; grid-row: 8; }
+.h15 { grid-column: 4; grid-row: 8; }
+.h16 { grid-column: 5; grid-row: 8; }
+
+/* Special center destination */
+.center-hole {
+    grid-column: 8;
+    grid-row: 8;
+    background-color: var(--white-hole);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.55);
+    border: 1.5px solid #d4ceb8;
+}
