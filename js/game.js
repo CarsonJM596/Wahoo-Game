@@ -89,6 +89,11 @@ function clearLegalMoves() {
         marble.classList.remove("legal-move", "selected");
     });
 
+    const choices = document.getElementById("move-choices");
+    if (choices) {
+        choices.innerHTML = "";
+    }
+
     legalMoves = [];
 }
 
@@ -325,12 +330,78 @@ function getLegalDestination(marble, roll) {
 }
 
 function getLegalMoves(roll) {
-    return marbles.filter((marble) => {
+    const moves = [];
+
+    marbles.forEach((marble) => {
         if (Number(marble.dataset.player) !== currentPlayer().id) {
-            return false;
+            return;
         }
 
-        return getLegalDestination(marble, roll) !== null;
+        // A marble can have more than one legal destination.
+        // In particular, a marble on its starting corner with a 5
+        // may either continue around the track or choose the center.
+        const destinations = [];
+
+        const normalDestination = getLegalDestination(marble, roll);
+        if (normalDestination) {
+            destinations.push(normalDestination);
+        }
+
+        // Center is an optional destination, not a forced one.
+        if (
+            marble.dataset.position === String(currentPlayer().entry) &&
+            roll === 5 &&
+            !destinations.some((destination) => destination.type === "center")
+        ) {
+            const centerOccupant = getCenterMarble();
+
+            if (!centerOccupant || !isFriendlyMarble(centerOccupant, currentPlayer())) {
+                destinations.push({ type: "center" });
+            }
+        }
+
+        destinations.forEach((destination) => {
+            moves.push({ marble, destination });
+        });
+    });
+
+    return moves;
+}
+
+function getMoveLabel(move, index) {
+    const { marble, destination } = move;
+    const marbleName = capitalize(marble.dataset.color) + " " + marble.id.split("-")[1];
+
+    if (destination.type === "center") {
+        return `${index + 1}. ${marbleName} → Center`;
+    }
+
+    if (destination.type === "home") {
+        return `${index + 1}. ${marbleName} → Home ${destination.index + 1}`;
+    }
+
+    return `${index + 1}. ${marbleName} → Track ${destination.position + 1}`;
+}
+
+function showMoveChoices() {
+    const choices = document.getElementById("move-choices");
+    if (!choices) {
+        return;
+    }
+
+    choices.innerHTML = "";
+
+    legalMoves.forEach((move, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "move-choice";
+        button.textContent = getMoveLabel(move, index);
+
+        button.addEventListener("click", () => {
+            moveMarble(move.marble, move.destination);
+        });
+
+        choices.appendChild(button);
     });
 }
 
@@ -339,41 +410,43 @@ function showLegalMoves(roll) {
 
     legalMoves = getLegalMoves(roll);
 
-    legalMoves.forEach((marble) => {
-        marble.classList.add("legal-move");
+    legalMoves.forEach((move) => {
+        move.marble.classList.add("legal-move");
     });
 
     if (legalMoves.length === 0) {
         if (roll === 1 || roll === 6) {
-            setMessage(`Rolled ${roll}. No legal moves — roll again.`);
+            setMessage(`Rolled ${roll}. No legal moves — turn passes to the next player.`);
         } else {
-            setMessage(`Rolled ${roll}. No legal moves — turn ends.`);
+            setMessage(`Rolled ${roll}. No legal moves — turn passes to the next player.`);
         }
 
         return;
     }
 
+    // Only one legal destination means there is no choice to make.
     if (legalMoves.length === 1) {
-        setMessage(`Rolled ${roll}. Moving the only legal marble.`);
-        moveMarble(legalMoves[0], roll);
+        setMessage(`Rolled ${roll}. Making the only legal move.`);
+        moveMarble(legalMoves[0].marble, legalMoves[0].destination);
         return;
     }
 
     awaitingMove = true;
     rollButton.disabled = true;
-    setMessage(`Rolled ${roll}. Choose one of the highlighted marbles.`);
+    setMessage(`Rolled ${roll}. Choose any legal move.`);
+    showMoveChoices();
 }
 
-function moveMarble(marble, roll) {
+function moveMarble(marble, destination) {
     const player = currentPlayer();
-    const destination = getLegalDestination(marble, roll);
-
-    if (!destination) {
-        return;
-    }
 
     clearLegalMoves();
     awaitingMove = false;
+
+    const choices = document.getElementById("move-choices");
+    if (choices) {
+        choices.innerHTML = "";
+    }
 
     if (destination.type === "center") {
         const centerOccupant = getCenterMarble();
@@ -393,23 +466,17 @@ function moveMarble(marble, roll) {
     }
 
     checkWin(player);
-    finishMove(roll);
+    finishMove();
 }
 
-function finishMove(roll) {
+function finishMove() {
     if (gameOver) {
         return;
     }
 
-    // Rolling 1 or 6 always grants another roll, even when there
-    // were no legal moves.
-    if (roll === 1 || roll === 6) {
-        currentRoll = null;
-        rollButton.disabled = false;
-        setMessage(`Rolled ${roll}. Roll again.`);
-        return;
-    }
-
+    // Turn order is always Player 1 → 2 → 3 → 4.
+    // Every completed turn passes to the next player, including
+    // rolls of 1 or 6.
     nextPlayer();
 }
 
@@ -462,15 +529,10 @@ rollButton.addEventListener("click", async () => {
     showLegalMoves(result);
 
     if (legalMoves.length === 0) {
-        if (result === 1 || result === 6) {
-            // Extra roll is already handled by keeping the same player.
-            rollButton.disabled = false;
-        } else {
-            // Give the player enough time to see that their turn had no legal moves
-            // before advancing to the next player.
-            setMessage(`Rolled ${result}. No legal moves — next player's turn in 3 seconds.`);
-            setTimeout(nextPlayer, 3000);
-        }
+        // No legal move: briefly show the result, then pass the turn.
+        // This applies to every roll so the order remains 1 → 2 → 3 → 4.
+        setMessage(`Rolled ${result}. No legal moves — next player's turn in 3 seconds.`);
+        setTimeout(nextPlayer, 3000);
     }
 });
 
@@ -480,11 +542,11 @@ marbles.forEach((marble) => {
             return;
         }
 
-        if (!legalMoves.includes(marble)) {
-            return;
-        }
+        const marbleMoves = legalMoves.filter((move) => move.marble === marble);
 
-        moveMarble(marble, currentRoll);
+        if (marbleMoves.length === 1) {
+            moveMarble(marbleMoves[0].marble, marbleMoves[0].destination);
+        }
     });
 });
 
