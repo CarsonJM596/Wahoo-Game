@@ -1,5 +1,8 @@
 const TRACK_LENGTH = 52;
 
+// Turn order is fixed: Player 1 → Player 2 → Player 3 → Player 4.
+const TURN_ORDER = [1, 2, 3, 4];
+
 const players = [
     {
         id: 1,
@@ -411,8 +414,17 @@ function finishMove(roll) {
 }
 
 function nextPlayer() {
-    currentPlayerIndex =
-        (currentPlayerIndex + 1) % players.length;
+    const currentId = currentPlayer().id;
+    const currentOrderIndex = TURN_ORDER.indexOf(currentId);
+    const nextOrderIndex =
+        (currentOrderIndex + 1) % TURN_ORDER.length;
+    const nextPlayerId = TURN_ORDER[nextOrderIndex];
+
+    // Resolve the next player by their fixed ID rather than relying on
+    // array position. This guarantees Player 1 → 2 → 3 → 4 every time.
+    currentPlayerIndex = players.findIndex(
+        (player) => player.id === nextPlayerId
+    );
 
     currentRoll = null;
     awaitingMove = false;
