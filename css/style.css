@@ -95,3 +95,31 @@ h1 {
 
     opacity: 0.6;
 }
+
+#move-message {
+    min-height: 42px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.marble.legal-move {
+    box-shadow:
+        0 0 0 3px white,
+        0 0 14px rgba(255, 255, 255, 0.95);
+    animation: legal-move-pulse 1s ease-in-out infinite alternate;
+}
+
+.marble.legal-move:hover {
+    transform: scale(1.15);
+}
+
+@keyframes legal-move-pulse {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.08);
+    }
+}
