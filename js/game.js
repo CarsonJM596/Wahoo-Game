@@ -1,13 +1,38 @@
 const TRACK_LENGTH = 52;
 
 const players = [
-    // entry = starting track hole (0-based)
-    // homeEntry = track hole immediately outside this player's home path
-    // centerExit = the corner used when leaving the center on a roll of 1
-    { id: 1, name: "Player 1", color: "green", entry: 43, homeEntry: 41, centerExit: 39 },
-    { id: 2, name: "Player 2", color: "yellow", entry: 4, homeEntry: 2, centerExit: 0 },
-    { id: 3, name: "Player 3", color: "blue", entry: 30, homeEntry: 28, centerExit: 26 },
-    { id: 4, name: "Player 4", color: "red", entry: 17, homeEntry: 15, centerExit: 13 }
+    {
+        id: 1,
+        name: "Player 1",
+        color: "green",
+        entry: 43,       // t44: left arm top corner
+        homeEntry: 41,   // t42: left arm center hole
+        centerExit: 43   // t44: closest corner to green's home
+    },
+    {
+        id: 2,
+        name: "Player 2",
+        color: "yellow",
+        entry: 4,        // t5: top arm right corner
+        homeEntry: 2,    // t3: top arm center hole
+        centerExit: 0    // t1: closest corner to yellow's home
+    },
+    {
+        id: 3,
+        name: "Player 3",
+        color: "blue",
+        entry: 30,       // t31: bottom arm left corner
+        homeEntry: 28,   // t29: bottom arm center hole
+        centerExit: 30   // t31: closest corner to blue's home
+    },
+    {
+        id: 4,
+        name: "Player 4",
+        color: "red",
+        entry: 17,       // t18: right arm bottom corner
+        homeEntry: 15,   // t16: right arm center hole
+        centerExit: 17   // t18: closest corner to red's home
+    }
 ];
 
 const teams = {
@@ -17,6 +42,8 @@ const teams = {
     yellow: "blue-yellow"
 };
 
+// Home paths point inward toward the center.
+// Green = left, Yellow = top, Red = right, Blue = bottom.
 const homeHoles = {
     green: [12, 13, 14, 15],
     yellow: [0, 1, 2, 3],
@@ -33,6 +60,7 @@ let currentPlayerIndex = 0;
 let currentRoll = null;
 let legalMoves = [];
 let awaitingMove = false;
+let gameOver = false;
 
 function currentPlayer() {
     return players[currentPlayerIndex];
@@ -54,14 +82,22 @@ function setMessage(message) {
 }
 
 function clearLegalMoves() {
-    marbles.forEach((marble) => marble.classList.remove("legal-move", "selected"));
+    marbles.forEach((marble) => {
+        marble.classList.remove("legal-move", "selected");
+    });
+
     legalMoves = [];
 }
 
 function getTrackMarbles() {
     return marbles.filter((marble) => {
         const position = marble.dataset.position;
-        return position !== "-1" && position !== "center" && !position.startsWith("home:");
+
+        return (
+            position !== "-1" &&
+            position !== "center" &&
+            !position.startsWith("home:")
+        );
     });
 }
 
@@ -96,8 +132,10 @@ function getHomeHole(color, homeIndex) {
 }
 
 function placeOnHole(marble, hole) {
-    const column = hole.style.gridColumn || getComputedStyle(hole).gridColumnStart;
-    const row = hole.style.gridRow || getComputedStyle(hole).gridRowStart;
+    const column =
+        hole.style.gridColumn || getComputedStyle(hole).gridColumnStart;
+    const row =
+        hole.style.gridRow || getComputedStyle(hole).gridRowStart;
 
     marble.style.gridColumn = column;
     marble.style.gridRow = row;
@@ -115,32 +153,26 @@ function captureIfNeeded(targetMarble, player) {
     }
 }
 
-function getTrackPath(start, steps) {
-    const path = [];
-
-    for (let i = 1; i <= steps; i++) {
-        path.push((start + i) % TRACK_LENGTH);
-    }
-
-    return path;
-}
-
 function getHomeDestination(player, marble, roll) {
     const position = marble.dataset.position;
-    const homeCount = homeHoles[player.color].length;
 
     if (position.startsWith("home:")) {
         const currentHome = Number(position.split(":")[1]);
         const destination = currentHome + roll;
 
-        if (destination >= homeCount) {
+        if (destination >= homeHoles[player.color].length) {
             return null;
         }
 
-        return { type: "home", index: destination };
+        return {
+            type: "home",
+            index: destination
+        };
     }
 
     const currentPosition = Number(position);
+
+    // The home-entry track hole is immediately before the first home hole.
     const distanceToHomeEntry =
         (player.homeEntry - currentPosition + TRACK_LENGTH) % TRACK_LENGTH;
 
@@ -155,20 +187,25 @@ function getHomeDestination(player, marble, roll) {
 
     const homeIndex = roll - stepsToFirstHome;
 
-    if (homeIndex >= homeCount) {
+    if (homeIndex < 0 || homeIndex >= homeHoles[player.color].length) {
         return null;
     }
 
-    return { type: "home", index: homeIndex };
+    return {
+        type: "home",
+        index: homeIndex
+    };
 }
 
 function pathIsBlocked(player, marble, roll) {
     const position = marble.dataset.position;
 
+    // A marble in its home path can only move forward through empty holes.
     if (position.startsWith("home:")) {
         const currentHome = Number(position.split(":")[1]);
-        for (let i = 1; i <= roll; i++) {
-            const targetHome = currentHome + i;
+
+        for (let step = 1; step <= roll; step++) {
+            const targetHome = currentHome + step;
 
             if (targetHome >= homeHoles[player.color].length) {
                 return true;
@@ -183,19 +220,23 @@ function pathIsBlocked(player, marble, roll) {
     }
 
     const currentPosition = Number(position);
-    const homeDestination = getHomeDestination(player, marble, roll);
+    const destination = getHomeDestination(player, marble, roll);
 
-    if (!homeDestination) {
+    if (!destination) {
         return true;
     }
 
-    const stepsToHomeEntry =
+    // Only teammates block the path. Enemy-team marbles may be crossed.
+    const distanceToHomeEntry =
         (player.homeEntry - currentPosition + TRACK_LENGTH) % TRACK_LENGTH;
 
-    const trackSteps = Math.min(roll, stepsToHomeEntry);
+    const trackSteps =
+        destination.type === "track"
+            ? roll
+            : distanceToHomeEntry;
 
-    for (let i = 1; i <= trackSteps; i++) {
-        const trackPosition = (currentPosition + i) % TRACK_LENGTH;
+    for (let step = 1; step <= trackSteps; step++) {
+        const trackPosition = (currentPosition + step) % TRACK_LENGTH;
         const occupant = getMarbleAtTrack(trackPosition);
 
         if (isFriendlyMarble(occupant, player)) {
@@ -203,9 +244,13 @@ function pathIsBlocked(player, marble, roll) {
         }
     }
 
-    if (homeDestination.type === "home") {
-        for (let i = 0; i <= homeDestination.index; i++) {
-            if (getMarbleAtHome(player.color, i)) {
+    // Once a marble enters its home path, all holes it travels through
+    // must be empty because home paths only belong to that player.
+    if (destination.type === "home") {
+        const finalIndex = destination.index;
+
+        for (let index = 0; index <= finalIndex; index++) {
+            if (getMarbleAtHome(player.color, index)) {
                 return true;
             }
         }
@@ -218,7 +263,8 @@ function getLegalDestination(marble, roll) {
     const player = currentPlayer();
     const position = marble.dataset.position;
 
-    // Marbles in the starting area can enter on 1 or 6.
+    // Starting area: a marble may enter the board on a 1 or 6,
+    // or go directly to the center on a 5.
     if (position === "-1") {
         if (roll === 5) {
             const centerOccupant = getCenterMarble();
@@ -240,10 +286,14 @@ function getLegalDestination(marble, roll) {
             return null;
         }
 
-        return { type: "track", position: player.entry };
+        return {
+            type: "track",
+            position: player.entry
+        };
     }
 
-    // A marble in the center can only leave on a 1.
+    // Center marbles can only leave on a 1, and they leave through
+    // the corner closest to their home.
     if (position === "center") {
         if (roll !== 1) {
             return null;
@@ -255,7 +305,10 @@ function getLegalDestination(marble, roll) {
             return null;
         }
 
-        return { type: "track", position: player.centerExit };
+        return {
+            type: "track",
+            position: player.centerExit
+        };
     }
 
     if (pathIsBlocked(player, marble, roll)) {
@@ -280,25 +333,29 @@ function showLegalMoves(roll) {
 
     legalMoves = getLegalMoves(roll);
 
-    legalMoves.forEach((marble) => marble.classList.add("legal-move"));
+    legalMoves.forEach((marble) => {
+        marble.classList.add("legal-move");
+    });
 
     if (legalMoves.length === 0) {
-        setMessage(
-            roll === 1 || roll === 6
-                ? `Rolled ${roll}. No legal move — rolling again.`
-                : `Rolled ${roll}. No legal moves — turn ends.`
-        );
+        if (roll === 1 || roll === 6) {
+            setMessage(`Rolled ${roll}. No legal moves — roll again.`);
+        } else {
+            setMessage(`Rolled ${roll}. No legal moves — turn ends.`);
+        }
+
         return;
     }
 
     if (legalMoves.length === 1) {
-        setMessage(`Rolled ${roll}. Only one legal move.`);
+        setMessage(`Rolled ${roll}. Moving the only legal marble.`);
         moveMarble(legalMoves[0], roll);
         return;
     }
 
-    setMessage(`Rolled ${roll}. Choose a highlighted marble.`);
     awaitingMove = true;
+    rollButton.disabled = true;
+    setMessage(`Rolled ${roll}. Choose one of the highlighted marbles.`);
 }
 
 function moveMarble(marble, roll) {
@@ -334,9 +391,15 @@ function moveMarble(marble, roll) {
 }
 
 function finishMove(roll) {
-    // 1 and 6 always give another roll, even if the player had no legal move.
+    if (gameOver) {
+        return;
+    }
+
+    // Rolling 1 or 6 always grants another roll, even when there
+    // were no legal moves.
     if (roll === 1 || roll === 6) {
         currentRoll = null;
+        rollButton.disabled = false;
         setMessage(`Rolled ${roll}. Roll again.`);
         return;
     }
@@ -345,11 +408,14 @@ function finishMove(roll) {
 }
 
 function nextPlayer() {
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    currentPlayerIndex =
+        (currentPlayerIndex + 1) % players.length;
+
     currentRoll = null;
     awaitingMove = false;
     clearLegalMoves();
     updateTurnDisplay();
+    rollButton.disabled = false;
     setMessage("Roll the dice.");
 }
 
@@ -361,14 +427,14 @@ function checkWin(player) {
     ).length;
 
     if (homeCount === 4) {
+        gameOver = true;
         setMessage(`${player.name} has all four marbles home!`);
         rollButton.disabled = true;
-        awaitingMove = false;
     }
 }
 
 rollButton.addEventListener("click", async () => {
-    if (awaitingMove) {
+    if (gameOver || awaitingMove) {
         return;
     }
 
@@ -378,13 +444,13 @@ rollButton.addEventListener("click", async () => {
     const result = await animateDiceRoll();
     currentRoll = result;
 
-    rollButton.disabled = false;
     showLegalMoves(result);
 
-    // If there is exactly one legal move, showLegalMoves handles it automatically.
-    // If there are zero legal moves, 1/6 gets another roll; other rolls end the turn.
     if (legalMoves.length === 0) {
-        if (result !== 1 && result !== 6) {
+        if (result === 1 || result === 6) {
+            // Extra roll is already handled by keeping the same player.
+            rollButton.disabled = false;
+        } else {
             setTimeout(nextPlayer, 500);
         }
     }
